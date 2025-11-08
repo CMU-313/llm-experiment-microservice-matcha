@@ -1,0 +1,9 @@
+services:
+  translator-service:
+    container_name: translator-service
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: translator-service:latest
+    ports:
+      - "5000:5000"
