@@ -88,6 +88,7 @@ def translate_content(content: str) -> tuple[bool, str]:
             # Basic check for empty or unintelligible translation
             if not translation.strip():
                 return (True, content)  # Graceful fallback for empty/unintelligible translation
+            print(translation)
             return (False, translation)
     except Exception as e:
         # Catch any other exceptions during the process and return original post
