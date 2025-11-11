@@ -3,8 +3,10 @@ name: VM Deploy Translator Service
 on:
   push:
     branches:
-      - main
-  workflow_dispatch:
+      - f25
+  pull_request:
+    branches: 
+      - f25
     
 concurrency:
   group: ${{ github.workflow }}
