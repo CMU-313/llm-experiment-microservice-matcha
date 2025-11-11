@@ -126,4 +126,4 @@ def translate_content(content: str) -> tuple[bool, str]:
     except Exception as e:
         # Catch any other exceptions during the process and return original post
         print(f"Error processing post: {e}")
-        return (True, content)  # Assume English and return original post as graceful fallback
+        return (False, e)  # Assume English and return original post as graceful fallback
