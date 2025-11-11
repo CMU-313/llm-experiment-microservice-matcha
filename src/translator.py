@@ -3,7 +3,7 @@ from ollama import Client
 
 OLLAMA_URL = os.getenv("OLLAMA_HOST", "localhost:11434")
 client = Client(host=OLLAMA_URL)
-MODEL_NAME = os.getenv("MODEL_NAME", "qwen3:0.6b")
+MODEL_NAME = os.getenv("MODEL_NAME", "gemma3:270m")
 
 # Translation context
 TRANSLATION_CONTEXT = """You are a language translator. Your task is to translate non-English text into English.
