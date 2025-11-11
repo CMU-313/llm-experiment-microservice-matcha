@@ -3,12 +3,20 @@ from ollama import Client
 
 OLLAMA_URL = os.getenv("OLLAMA_HOST", "localhost:11434")
 client = Client(host=OLLAMA_URL)
-MODEL_NAME = os.getenv("MODEL_NAME", "llama3.1:8b")
+MODEL_NAME = os.getenv("MODEL_NAME", "gemma3:270m")
 
 # Translation context
-TRANSLATION_CONTEXT = """You are a language translator. Translate to English if it is not already in English. Follow the examples and do not output extra things.
+TRANSLATION_CONTEXT = """You are a language translator. Your task is to translate non-English text into English.
 
-Example:
+CRITICAL RULES:
+- Output ONLY the English translation
+- Do NOT output the original text
+- Do NOT explain or add any extra words
+- Do NOT say "Translation:" or any prefix
+- If the input is already in English, output it as-is
+- Be natural and accurate
+
+Examples:
 INPUT: Bonjour, je m'appelle Bob
 OUTPUT: Hello, my name is Bob
 
@@ -18,16 +26,28 @@ OUTPUT: Can you please help me?
 INPUT: ¡Hola! ¿Cómo estás?
 OUTPUT: Hello! How are you?
 
+INPUT: 你好我是
+OUTPUT: Hello, I am
+
+INPUT: 你好Andrew！你今天过的怎么样？
+OUTPUT: Hello Andrew! How are you doing today?
+
 INPUT: Hello! How are you?
 OUTPUT: Hello! How are you?
 """
 
 # Classification context
-CLASSIFICATION_CONTEXT = """You are a language classifier. Detect the language of the input text and reply only with the English name of that language. If you don't know the language, reply with "Unknown".
-If it is a combination of multiple languages, reply with the most likely language with the most percentage in the text, ALWAYS output only one language instead of multiple ones.
-For simplified Chinese, tradional Chinese, Cantonese, or other Chinese dialect, reply the word "Chinese".
-For, English, don't reply with English-US or English_GB, but rather just "English".
-Example:
+CLASSIFICATION_CONTEXT = """You are a language classifier. Your task is to identify what language the input text is written in.
+
+CRITICAL RULES:
+- Output ONLY the language name in English (e.g., "English", "Chinese", "French", "German", "Spanish")
+- Do NOT output the text itself
+- Do NOT translate the text
+- Do NOT explain or add any extra words
+- For any form of Chinese (Simplified, Traditional, Cantonese), output only "Chinese"
+- If unsure, output "Unknown"
+
+Examples:
 INPUT: Bonjour, je m'appelle Bob
 OUTPUT: French
 
@@ -42,6 +62,9 @@ OUTPUT: English
 
 INPUT: 你好Andrew！你今天过的怎么样？
 OUTPUT: Chinese
+
+INPUT: 你好我是
+OUTPUT: Chinese
 """
 
 
@@ -51,10 +74,10 @@ def get_language(post: str) -> str:
         model=MODEL_NAME,
         messages=[
             {"role": "system", "content": CLASSIFICATION_CONTEXT},
-            {"role": "user", "content": f"Detect the language of the following text:\n{post}"}
+            {"role": "user", "content": f"INPUT: {post}"}
         ]
     )
-    return response.message.content
+    return response.message.content.strip()
 
 
 def get_translation(post: str) -> str:
@@ -63,10 +86,10 @@ def get_translation(post: str) -> str:
         model=MODEL_NAME,
         messages=[
             {"role": "system", "content": TRANSLATION_CONTEXT},
-            {"role": "user", "content": f"Translate the following text to English. Only give translation and nothing else.\n{post}"}
+            {"role": "user", "content": f"INPUT: {post}"}
         ]
     )
-    return response.message.content
+    return response.message.content.strip()
 
 
 def translate_content(content: str) -> tuple[bool, str]:
