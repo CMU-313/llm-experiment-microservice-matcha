@@ -3,7 +3,7 @@ from ollama import Client
 
 OLLAMA_URL = os.getenv("OLLAMA_HOST", "localhost:11434")
 client = Client(host=OLLAMA_URL)
-MODEL_NAME = os.getenv("MODEL_NAME", "gemma3:270m")
+MODEL_NAME = os.getenv("MODEL_NAME", "qwen3:0.6b")
 
 # Translation context
 TRANSLATION_CONTEXT = """You are a language translator. Your task is to translate non-English text into English.
@@ -108,8 +108,6 @@ def translate_content(content: str) -> tuple[bool, str]:
         else:
             is_english = language.strip().lower() == "english"
 
-        is_english = False
-        
         if is_english:
             return (True, content)
         else:
@@ -126,4 +124,4 @@ def translate_content(content: str) -> tuple[bool, str]:
     except Exception as e:
         # Catch any other exceptions during the process and return original post
         print(f"Error processing post: {e}")
-        return (False, str(e))  # Assume English and return original post as graceful fallback
+        return (True, content)  # Assume English and return original post as graceful fallback
