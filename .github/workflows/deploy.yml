@@ -26,9 +26,9 @@ jobs:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_ADMIN }}
           password: ${{ secrets.ADMIN_PASSWORD }}
-          script: | 
-            cd ${{ secrets.REPO_NAME }}
-            git pull origin main
+        script: | 
+          cd ${{ secrets.REPO_NAME }}
+          git pull origin f25
             curl -fsSL https://ollama.com/install.sh | sh
             ollama pull gemma3:270m
             docker compose down
