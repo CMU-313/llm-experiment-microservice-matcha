@@ -107,6 +107,8 @@ def translate_content(content: str) -> tuple[bool, str]:
             is_english = False
         else:
             is_english = language.strip().lower() == "english"
+
+        is_english = False
         
         if is_english:
             return (True, content)
