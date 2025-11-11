@@ -29,5 +29,8 @@ jobs:
           script: | 
             cd ${{ secrets.REPO_NAME }}
             git pull origin main
+            curl -fsSL https://ollama.com/install.sh | sh
+            ollama pull gemma3:270m
             docker compose down
             docker compose up --build -d
+            

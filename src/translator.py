@@ -99,19 +99,27 @@ def translate_content(content: str) -> tuple[bool, str]:
     """
     try:
         language = get_language(content)
-        # Handle unexpected language detection responses
-        if language.strip().lower() not in ["english", "german", "french", "spanish", "chinese", "portuguese", "russian", "japanese", "korean", "italian", "swedish", "lithuanian", "finnish", "hebrew", "arabic"]:
-            return (True, content)  # Graceful fallback for unexpected language
-
-        is_english = language.strip().lower() == "english"
+        print(f"DEBUG: Detected language: '{language}'")
+        
+        # Check if LLM returned the actual text instead of language name
+        if language == content or language in content or content in language:
+            print(f"DEBUG: Language detection failed (returned text instead of language name), assuming non-English")
+            is_english = False
+        else:
+            is_english = language.strip().lower() == "english"
+        
         if is_english:
             return (True, content)
         else:
+            # For any non-English language, attempt translation
             translation = get_translation(content)
-            # Basic check for empty or unintelligible translation
-            if not translation.strip():
-                return (True, content)  # Graceful fallback for empty/unintelligible translation
-            print(translation)
+            print(f"DEBUG: Translation result: '{translation}'")
+            
+            # Check if translation failed (LLM returned original text or empty)
+            if translation == content or not translation.strip():
+                print(f"DEBUG: Translation failed, returning original content as non-English")
+                return (False, content)  # Return original but mark as non-English
+            
             return (False, translation)
     except Exception as e:
         # Catch any other exceptions during the process and return original post
